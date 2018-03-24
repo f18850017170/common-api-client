@@ -7,6 +7,8 @@ import cn.vonfly.common.api.client.sign.SignResultBackFill;
 import cn.vonfly.common.api.client.sign.annotation.SignIgnore;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 public abstract class AbsReqSignDto<R extends Serializable> extends AbsBaseSignDto implements SignDataBackFill,SignResultBackFill,HttpPostExecute {
     @SignIgnore
@@ -21,10 +23,15 @@ public abstract class AbsReqSignDto<R extends Serializable> extends AbsBaseSignD
      */
     public abstract String buildUrl();
     /**
-     * 返回结果对象
+     * 返回对象的class
      * @return
      */
-    public abstract Class<R> responseClass();
+    public  Class<R> responseClass(){
+        Type genericSuperclass = getClass().getGenericSuperclass();
+        ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
+        Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+        return (Class<R>) actualTypeArguments[0];
+    }
 
     /**
      * 构建失败请求
